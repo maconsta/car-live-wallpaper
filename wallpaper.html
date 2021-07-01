@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+
+<head>
+
+    <title>BMW e24</title>
+    <meta name="author" content="martin konstantinov">
+    <meta name="description" content="a program that changes the wallpaper according to the daytime">
+
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+
+        img {
+            position: absolute;
+        }
+    </style>
+</head>
+
+<body>
+
+    <img class="bottom" src="images/night.jpg" alt="bmw">
+    <img class="top" src="images/sunset.jpg" alt="bmw">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <script>
+
+        function changeImageLoadNextSlow(next) {
+            //fade-out the current "top" image, change the class of the "bottom" image to "top",
+            //then add a new "<img>" element with class "bottom"
+            $(".top").fadeOut(20000, function () {
+                $(this).remove();
+                changeClass();
+                addImageElement(next);
+            });
+        }
+
+        function changeImageLoadNextFast(next) {
+            //fade-out the current "top" image and then remove it -- fast
+            $(".top").fadeOut(1000, function () {
+                $(this).remove();
+                changeClass();
+                addImageElement(next);
+            });
+        }
+
+        function changeClass() {
+            //changes the class of the picture from "bottom" to "top"
+            $(".bottom").addClass("top").removeClass("bottom");
+        }
+
+        function addImageElement(str) {
+            //adds an <img> element before the current img
+            var e = $("<img class = 'bottom'>");
+            e.attr("src", str);
+            $(".top").before(e);
+        }
+
+        function getLastMapKey() {
+            var value;
+            var iter = nextImagesMap.keys()
+            for (let i = 0; i < nextImagesMap.size; i++) {
+                value = iter.next().value;
+            }
+            return value;
+        }
+
+        var nextImagesMap = new Map();
+        nextImagesMap.set("7:0", "images/morning.jpg");
+        nextImagesMap.set("7:45", "images/morning_golden.jpg");
+        nextImagesMap.set("8:30", "images/midday.jpg");
+        nextImagesMap.set("10:0", "images/sunset.jpg");
+        nextImagesMap.set("19:0", "images/night.jpg");
+        nextImagesMap.set("22:0", "images/night_headlights.jpg");
+        nextImagesMap.set("22:15", "images/morning_headlights.jpg");
+
+        var initialImagesMap = new Map();
+        initialImagesMap.set("7:0", "images/morning_headlights.jpg");
+        initialImagesMap.set("7:45", "images/morning.jpg");
+        initialImagesMap.set("8:30", "images/morning_golden.jpg");
+        initialImagesMap.set("10:0", "images/midday.jpg");
+        initialImagesMap.set("19:0", "images/sunset.jpg");
+        initialImagesMap.set("22:0", "images/night.jpg");
+        initialImagesMap.set("22:15", "images/night_headlights.jpg");
+
+
+        function main() {
+            var d = new Date();
+            var key = d.getHours() + ":" + d.getMinutes();
+            var nextImage = nextImagesMap[key];
+
+            if (nextImage) {
+                if (key == "22:15" || key == "7:45") {
+                    changeImageLoadNextFast(nextImage);
+                } else {
+                    changeImageLoadNextSlow(nextImage);
+                }
+            }
+        }
+
+        function setInitialImage() {
+            var it, outer_flag, inner_flag, key, arr = [];
+            var d = new Date;
+            var h = d.getHours();
+            var m = d.getMinutes();
+            var old_key = h + ":" + m;
+
+            outer_flag = true;
+            while (outer_flag) {
+                inner_flag = true;
+                while (inner_flag) {
+                    it = nextImagesMap.keys();
+                    if (h < 0) h = 23;
+                    for (let i = 0; i < nextImagesMap.size; i++) {
+                        arr = it.next().value.split(":");
+                        if (h == arr[0]) {
+                            inner_flag = false;
+                            break;
+                        }
+                    }
+                    if (inner_flag) h--;
+                }
+
+                inner_flag = true;
+                while (inner_flag) {
+                    it = nextImagesMap.keys();
+                    if (m < 0) m = 59;
+                    for (let i = 0; i < nextImagesMap.size; i++) {
+                        key = h + ":" + m;
+                        if (key == it.next().value) {
+                            inner_flag = false;
+                            break;
+                        }
+                    }
+                    if (inner_flag) m--;
+                }
+
+                if (key.h > old_key.h) {
+                    h--;
+                } else {
+                    outer_flag = false;
+                }
+            }
+
+            $(".top").attr("src", initialImagesMap.get(key));
+            $(".bottom").attr("src", nextImagesMap.get(key));
+
+        }
+
+        $(document).ready(function () {
+            setInitialImage();
+            setInterval(function () {
+                main();
+
+            }, 60000);
+        });
+
+    </script>
+</body>
