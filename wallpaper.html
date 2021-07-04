@@ -69,30 +69,29 @@
 
         var nextImagesMap = new Map();
         nextImagesMap.set("7:0", "images/morning.jpg");
-        nextImagesMap.set("7:45", "images/morning_golden.jpg");
-        nextImagesMap.set("8:30", "images/midday.jpg");
+        nextImagesMap.set("8:0", "images/morning_golden.jpg");
+        nextImagesMap.set("9:0", "images/midday.jpg");
         nextImagesMap.set("10:0", "images/sunset.jpg");
         nextImagesMap.set("19:0", "images/night.jpg");
         nextImagesMap.set("22:0", "images/night_headlights.jpg");
-        nextImagesMap.set("22:15", "images/morning_headlights.jpg");
+        nextImagesMap.set("23:0", "images/morning_headlights.jpg");
 
         var initialImagesMap = new Map();
         initialImagesMap.set("7:0", "images/morning_headlights.jpg");
-        initialImagesMap.set("7:45", "images/morning.jpg");
-        initialImagesMap.set("8:30", "images/morning_golden.jpg");
+        initialImagesMap.set("8:0", "images/morning.jpg");
+        initialImagesMap.set("9:0", "images/morning_golden.jpg");
         initialImagesMap.set("10:0", "images/midday.jpg");
         initialImagesMap.set("19:0", "images/sunset.jpg");
         initialImagesMap.set("22:0", "images/night.jpg");
-        initialImagesMap.set("22:15", "images/night_headlights.jpg");
+        initialImagesMap.set("23:0", "images/night_headlights.jpg");
 
 
         function main() {
             var d = new Date();
             var key = d.getHours() + ":" + d.getMinutes();
-            var nextImage = nextImagesMap[key];
-
+            var nextImage = nextImagesMap.get(key);
             if (nextImage) {
-                if (key == "22:15" || key == "7:45") {
+                if (key == "23:0" || key == "8:0") {
                     changeImageLoadNextFast(nextImage);
                 } else {
                     changeImageLoadNextSlow(nextImage);
@@ -105,7 +104,6 @@
             var d = new Date;
             var h = d.getHours();
             var m = d.getMinutes();
-            var old_key = h + ":" + m;
 
             outer_flag = true;
             while (outer_flag) {
@@ -136,9 +134,9 @@
                     }
                     if (inner_flag) m--;
                 }
-
-                if (key.h > old_key.h) {
+                if (key == "0:0") {
                     h--;
+                    m--;
                 } else {
                     outer_flag = false;
                 }
